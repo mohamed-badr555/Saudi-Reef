@@ -1,13 +1,12 @@
 import PageWrapper from '@/Components/layout/PageWrapper/PageWrapper'
 import HomePage from '@/Components/pages/Home/Home'
-import React from 'react'
 
-const page = () => {
+const DashboardPage = () => {
   return (
-       <PageWrapper currentPage="Dashboard">
+    <PageWrapper currentPage="لوحة البيانات">
       <HomePage/>
     </PageWrapper>
   )
 }
 
-export default page
+export default DashboardPage

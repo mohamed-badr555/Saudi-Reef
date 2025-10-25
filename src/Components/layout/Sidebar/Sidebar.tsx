@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { memo, useState, useEffect, useRef, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAppContext } from '@/Context/AppContext';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   MdSettings,
   MdAssignment,
@@ -35,7 +36,7 @@ interface MenuItem {
   }>;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'Dashboard' }) => {
+const Sidebar: React.FC<SidebarProps> = memo(({ currentPage = 'Dashboard' }) => {
   const { isMobile, isSidebarOpen: isOpen, toggleSidebar: onToggle } = useAppContext();
   const pathname = usePathname();
 
@@ -46,7 +47,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'Dashboard' }) => {
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Define menu structure 
-  const menuItems: MenuItem[] = [
+  const menuItems: MenuItem[] = useMemo(() => [
     {
       key: 'dashboards',
       label: 'لوحات البيانات',
@@ -104,7 +105,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'Dashboard' }) => {
         { key: 'budget-tracking', label: 'تتبع الميزانية', link: '/budget-tracking' },
       ],
     },
-  ];
+  ], []);
 
   const toggleExpanded = (key: string) => {
     setExpandedItems((prev) => {
@@ -286,30 +287,46 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'Dashboard' }) => {
                   </div>
 
                   {/* Subnav Items */}
-                  {(isOpen || isMobile) &&
-                    item.subItems &&
-                    expandedItems.includes(item.key) && (
-                      <div className="list-none p-0 m-0 bg-primary-50 overflow-hidden transition-all duration-300">
-                        {item.subItems.map((subItem, subIndex) => {
-                          const subLabel = subItem.label;
-                          const isSubActive = pathname === subItem.link;
+                  <AnimatePresence initial={false}>
+                    {(isOpen || isMobile) &&
+                      item.subItems &&
+                      expandedItems.includes(item.key) && (
+                        <motion.div
+                          key={`submenu-${item.key}`}
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.3, ease: 'easeInOut' }}
+                          className="list-none p-0 m-0 bg-primary-50 overflow-hidden"
+                        >
+                          {item.subItems.map((subItem, subIndex) => {
+                            const subLabel = subItem.label;
+                            const isSubActive = pathname === subItem.link;
 
-                          return (
-                            <Link key={subIndex} href={subItem.link}>
-                              <div
-                                className={`flex items-center py-2 px-6 pr-12 text-gray-300 text-sm transition-all duration-200 rounded-xl hover:bg-gray-800 hover:text-white focus:bg-gray-800 focus:text-white my-2 ${
-                                  isSubActive
-                                    ? 'text-green-400 font-semibold'
-                                    : ''
-                                }`}
+                            return (
+                              <motion.div
+                                key={subIndex}
+                                initial={{ x: -20, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                transition={{ delay: subIndex * 0.05, duration: 0.2 }}
                               >
-                                <span>{subLabel}</span>
-                              </div>
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    )}
+                                <Link href={subItem.link}>
+                                  <div
+                                    className={`flex items-center py-2 px-6 pr-12 text-gray-300 text-sm transition-all duration-200 rounded-xl hover:bg-gray-800 hover:text-white focus:bg-gray-800 focus:text-white my-2 ${
+                                      isSubActive
+                                        ? 'text-green-400 font-semibold'
+                                        : ''
+                                    }`}
+                                  >
+                                    <span>{subLabel}</span>
+                                  </div>
+                                </Link>
+                              </motion.div>
+                            );
+                          })}
+                        </motion.div>
+                      )}
+                  </AnimatePresence>
                 </>
               )}
             </div>
@@ -356,6 +373,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'Dashboard' }) => {
       )}
     </aside>
   );
-};
+});
+
+Sidebar.displayName = 'Sidebar';
 
 export default Sidebar;

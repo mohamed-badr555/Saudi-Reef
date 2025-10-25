@@ -1,5 +1,6 @@
 'use client';
 
+import { memo, useMemo } from 'react';
 import DonutChart from '@/Components/ui/DonutChart';
 import HorizontalBarChart from '@/Components/ui/HorizontalBarChart';
 import GroupedBarChart from '@/Components/ui/GroupedBarChart';
@@ -10,9 +11,9 @@ import StackedMetricCard from '@/Components/ui/StackedMetricCard';
 import dashboardData from '@/data/dashboardData.json';
 import { MdTrendingUp, MdCheckCircle, MdAccessTime, MdWarning } from 'react-icons/md';
 
-const HomePage = () => {
+const HomePage = memo(() => {
   // Risk Management Table Columns
-  const riskColumns = [
+  const riskColumns = useMemo(() => [
     { key: 'project', label: 'المشروع' },
     { key: 'risk', label: 'المخاطرة' },
     {
@@ -24,10 +25,10 @@ const HomePage = () => {
       },
     },
     { key: 'status', label: 'الحالة' },
-  ];
+  ], []);
 
   // Violating Projects Table Columns
-  const violatingColumns = [
+  const violatingColumns = useMemo(() => [
     { key: 'project', label: 'المشروع' },
     {
       key: 'deviation',
@@ -46,10 +47,10 @@ const HomePage = () => {
         return <span className={colors[value as keyof typeof colors] || 'text-gray-400'}>{value}</span>;
       },
     },
-  ];
+  ], []);
 
   // Project Stats Table Columns
-  const statsColumns = [
+  const statsColumns = useMemo(() => [
     { key: 'metric', label: 'المقياس' },
     { key: 'value', label: 'القيمة' },
     {
@@ -61,7 +62,7 @@ const HomePage = () => {
         return <span className={color}>{val}</span>;
       },
     },
-  ];
+  ], []);
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -98,7 +99,7 @@ const HomePage = () => {
       </div>
 
       {/* Top Row - 4 Donut Charts */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 mb-6">
+      <div className="grid grid-cols-1  xl:grid-cols-3 gap-4 sm:gap-6 mb-6">
         <DonutChart
           data={dashboardData.projectTypes}
           title="توزيع أنواع المشاريع"
@@ -106,13 +107,7 @@ const HomePage = () => {
           centerLabel="مشروع"
           height={280}
         />
-        <DonutChart
-          data={dashboardData.projectPhases}
-          title="توزيع مراحل المشاريع"
-          centerValue="107"
-          centerLabel="مرحلة"
-          height={280}
-        />
+
         <DonutChart
           data={dashboardData.projectRegions}
           title="توزيع أنواع المشاريع"
@@ -153,7 +148,7 @@ const HomePage = () => {
           title="إحصائيات وبرامج المشاريع"
           metrics={[
             { label: 'منتظم', value: 86, color: '#3b82f6' },
-            { label: 'متأخر', value: 13, color: '#f59e0b' },
+            { label: 'متأخر', value: 13, color: '#f59e00' },
             { label: 'متوقف', value: 6, color: '#a855f7' },
           ]}
         />
@@ -206,7 +201,7 @@ const HomePage = () => {
       </div>
 
       {/* Last Row - Scatter + Stats Table + Status */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
         <ScatterChart
           data={dashboardData.projectScatter}
           title="إحصائيات وتجميع المشاريع"
@@ -239,7 +234,7 @@ const HomePage = () => {
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-8 bg-gray-700 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-yellow-500 transition-all duration-500"
+                    className="h-full bg-yellow-600 transition-all duration-500"
                     style={{ width: `${dashboardData.projectStatus.late}%` }}
                   ></div>
                 </div>
@@ -257,7 +252,7 @@ const HomePage = () => {
             </div>
             <div className="flex justify-around mt-6 text-xs">
               <div className="text-center">
-                <div className="w-3 h-3 bg-yellow-500 rounded-full mx-auto mb-1"></div>
+                <div className="w-3 h-3 bg-yellow-600 rounded-full mx-auto mb-1"></div>
                 <div className="text-gray-400">متأخر</div>
               </div>
               <div className="text-center">
@@ -270,6 +265,8 @@ const HomePage = () => {
       </div>
     </div>
   );
-};
+});
+
+HomePage.displayName = 'HomePage';
 
 export default HomePage;

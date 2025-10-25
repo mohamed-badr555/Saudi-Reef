@@ -1,5 +1,6 @@
 'use client';
 
+import { memo, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { ApexOptions } from 'apexcharts';
 
@@ -14,18 +15,18 @@ interface DonutChartProps {
   colors?: string[];
 }
 
-const DonutChart: React.FC<DonutChartProps> = ({
+const DonutChart: React.FC<DonutChartProps> = memo(({
   data,
   title,
   centerValue,
   centerLabel,
-  height = 280,
+  height = 380,
   colors = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444', '#06b6d4', '#ec4899', '#84cc16', '#f97316'],
 }) => {
-  const series = data.map((item) => item.value);
-  const labels = data.map((item) => item.name);
+  const series = useMemo(() => data.map((item) => item.value), [data]);
+  const labels = useMemo(() => data.map((item) => item.name), [data]);
 
-  const options: ApexOptions = {
+  const options: ApexOptions = useMemo(() => ({
     chart: {
       type: 'donut',
       fontFamily: 'Noto Kufi Arabic, sans-serif',
@@ -49,6 +50,14 @@ const DonutChart: React.FC<DonutChartProps> = ({
       itemMargin: {
         horizontal: 8,
         vertical: 4,
+      },
+      floating: false,
+      offsetY: 0,
+      formatter: function(seriesName: string, opts: { seriesIndex: number; w: { globals: { series: number[] } } }) {
+        const value = opts.w.globals.series[opts.seriesIndex];
+        const total = opts.w.globals.series.reduce((a: number, b: number) => a + b, 0);
+        const percentage = ((value / total) * 100).toFixed(1);
+        return `${percentage}% ${seriesName}`;
       },
     },
     plotOptions: {
@@ -81,23 +90,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
       },
     },
     dataLabels: {
-      enabled: true,
-      formatter: (val: number) => {
-        return val > 5 ? `${val.toFixed(1)}%` : '';
-      },
-      style: {
-        fontSize: '11px',
-        fontFamily: 'Noto Kufi Arabic, sans-serif',
-        fontWeight: 'bold',
-        colors: ['#fff'],
-      },
-      dropShadow: {
-        enabled: true,
-        top: 1,
-        left: 1,
-        blur: 1,
-        opacity: 0.5,
-      },
+      enabled: false,
     },
     stroke: {
       show: true,
@@ -140,16 +133,18 @@ const DonutChart: React.FC<DonutChartProps> = ({
         },
       },
     ],
-  };
+  }), [labels, colors, series, centerValue, centerLabel, data]);
 
   return (
     <div className="bg-linear-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-gray-700/50 shadow-xl hover:shadow-2xl transition-all duration-300">
       <h3 className="text-base sm:text-lg  font-semibold text-white mb-4 text-right">{title}</h3>
-      <div className="w-full" dir="rtl">
+      <div className="w-full overflow-visible" dir="rtl">
         <Chart options={options} series={series} type="donut" height={height} />
       </div>
     </div>
   );
-};
+});
+
+DonutChart.displayName = 'DonutChart';
 
 export default DonutChart;

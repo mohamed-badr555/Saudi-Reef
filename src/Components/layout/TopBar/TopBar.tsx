@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { useAppContext } from '@/Context/AppContext';
 import { MdMenu, MdSettings, MdNotifications, MdFullscreen, MdFullscreenExit } from 'react-icons/md';
 
@@ -9,7 +9,7 @@ interface TopBarProps {
   currentSection?: string;
 }
 
-const TopBar: React.FC<TopBarProps> = () => {
+const TopBar: React.FC<TopBarProps> = memo(() => {
   const { isMobile, isSidebarOpen, toggleSidebar } = useAppContext();
 
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -18,8 +18,8 @@ const TopBar: React.FC<TopBarProps> = () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().then(() => {
         setIsFullscreen(true);
-      }).catch((err) => {
-        // console.error(`Error attempting to enable fullscreen: ${err.message}`);
+      }).catch(() => {
+        // Silently handle fullscreen errors
       });
     } else {
       if (document.exitFullscreen) {
@@ -103,6 +103,8 @@ const TopBar: React.FC<TopBarProps> = () => {
       </div>
     </div>
   );
-};
+});
+
+TopBar.displayName = 'TopBar';
 
 export default TopBar;

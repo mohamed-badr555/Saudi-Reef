@@ -1,7 +1,7 @@
 'use client';
 
+import { memo, useState, useEffect, useCallback } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { useState, useEffect } from 'react';
 
 interface GroupedBarChartProps {
   data: Record<string, string | number>[];
@@ -11,7 +11,7 @@ interface GroupedBarChartProps {
   xKey?: string;
 }
 
-const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: { name: string; value: number; color: string }[]; label?: string }) => {
+const CustomTooltip = memo(({ active, payload, label }: { active?: boolean; payload?: { name: string; value: number; color: string }[]; label?: string }) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-gray-900 border border-gray-700 rounded-lg p-3 shadow-xl">
@@ -25,27 +25,33 @@ const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?:
     );
   }
   return null;
-};
+});
 
-const GroupedBarChart: React.FC<GroupedBarChartProps> = ({
+CustomTooltip.displayName = 'CustomTooltip';
+
+const GroupedBarChart: React.FC<GroupedBarChartProps> = memo(({
   data,
   title,
   dataKeys,
   colors = ['#10b981', '#3b82f6', '#f59e0b'],
   xKey = 'month',
 }) => {
-  const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [isSmallScreen, setIsSmallScreen] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 430;
+    }
+    return false;
+  });
+
+  const checkScreenSize = useCallback(() => {
+    setIsSmallScreen(window.innerWidth < 430);
+  }, []);
 
   useEffect(() => {
-    const checkScreenSize = () => {
-      setIsSmallScreen(window.innerWidth < 430);
-    };
-    
-    checkScreenSize();
     window.addEventListener('resize', checkScreenSize);
     
     return () => window.removeEventListener('resize', checkScreenSize);
-  }, []);
+  }, [checkScreenSize]);
 
   return (
     <div className="bg-linear-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-gray-700/50 shadow-xl hover:shadow-2xl transition-all duration-300">
@@ -108,12 +114,24 @@ const GroupedBarChart: React.FC<GroupedBarChartProps> = ({
               dataKey={key}
               fill={colors[index % colors.length]}
               radius={[4, 4, 0, 0]}
+              isAnimationActive={false}
             />
           ))}
         </BarChart>
       </ResponsiveContainer>
     </div>
   );
-};
+}, (prevProps, nextProps) => {
+  // Custom comparison to prevent unnecessary re-renders
+  return (
+    prevProps.title === nextProps.title &&
+    prevProps.xKey === nextProps.xKey &&
+    JSON.stringify(prevProps.data) === JSON.stringify(nextProps.data) &&
+    JSON.stringify(prevProps.dataKeys) === JSON.stringify(nextProps.dataKeys) &&
+    JSON.stringify(prevProps.colors) === JSON.stringify(nextProps.colors)
+  );
+});
+
+GroupedBarChart.displayName = 'GroupedBarChart';
 
 export default GroupedBarChart;

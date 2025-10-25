@@ -1,14 +1,14 @@
 {
   "projectTypes": [
-    { "name": "مشاريع البنية التحتية", "value": 17, "percentage": 17 },
-    { "name": "مشاريع الطاقة", "value": 15, "percentage": 15 },
-    { "name": "مشاريع المياه", "value": 13, "percentage": 13 },
-    { "name": "مشاريع النقل", "value": 12, "percentage": 12 },
-    { "name": "مشاريع الإسكان", "value": 11, "percentage": 11 },
-    { "name": "مشاريع الصحة", "value": 10, "percentage": 10 },
-    { "name": "مشاريع التعليم", "value": 9, "percentage": 9 },
-    { "name": "مشاريع البيئة", "value": 7, "percentage": 7 },
-    { "name": "مشاريع الزراعة", "value": 6, "percentage": 6 }
+    { "name": "البنية التحتية", "value": 17, "percentage": 17 },
+    { "name": "الطاقة", "value": 15, "percentage": 15 },
+    { "name": "المياه", "value": 13, "percentage": 13 },
+    { "name": "النقل", "value": 12, "percentage": 12 },
+    { "name": "الإسكان", "value": 11, "percentage": 11 },
+    { "name": "الصحة", "value": 10, "percentage": 10 },
+    { "name": "التعليم", "value": 9, "percentage": 9 },
+    { "name": "البيئة", "value": 7, "percentage": 7 },
+    { "name": "الزراعة", "value": 6, "percentage": 6 }
   ],
   "projectPhases": [
     { "name": "التخطيط", "value": 15, "percentage": 15 },

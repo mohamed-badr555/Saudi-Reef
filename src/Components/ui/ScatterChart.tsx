@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { ScatterChart as RechartsScatter, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 interface ScatterChartProps {
@@ -7,7 +8,7 @@ interface ScatterChartProps {
   title: string;
 }
 
-const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: { payload: { x: number; y: number; label: string } }[] }) => {
+const CustomTooltip = memo(({ active, payload }: { active?: boolean; payload?: { payload: { x: number; y: number; label: string } }[] }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
@@ -19,14 +20,16 @@ const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: { payl
     );
   }
   return null;
-};
+});
 
-const ScatterChart: React.FC<ScatterChartProps> = ({ data, title }) => {
+CustomTooltip.displayName = 'CustomTooltip';
+
+const ScatterChart: React.FC<ScatterChartProps> = memo(({ data, title }) => {
   return (
     <div className="bg-linear-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-gray-700/50 shadow-xl hover:shadow-2xl transition-all duration-300">
       <h3 className="text-base sm:text-lg font-semibold text-white mb-4 text-right">{title}</h3>
       <ResponsiveContainer width="100%" height={300}>
-        <RechartsScatter margin={{ top: 20, right: 20, bottom: 40, left: 50 }}>
+        <RechartsScatter margin={{ top: 20, right: 40, bottom: 40, left: 10 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
           <XAxis
             type="number"
@@ -69,7 +72,7 @@ const ScatterChart: React.FC<ScatterChartProps> = ({ data, title }) => {
             dx={-10}
           />
           <Tooltip content={<CustomTooltip />} cursor={{ strokeDasharray: '3 3' }} />
-          <Scatter name="المشاريع" data={data} shape="circle">
+          <Scatter name="المشاريع" data={data} shape="circle" isAnimationActive={false}>
             {data.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={entry.color} radius={entry.size * 3} />
             ))}
@@ -78,6 +81,14 @@ const ScatterChart: React.FC<ScatterChartProps> = ({ data, title }) => {
       </ResponsiveContainer>
     </div>
   );
-};
+}, (prevProps, nextProps) => {
+  // Custom comparison to prevent unnecessary re-renders
+  return (
+    prevProps.title === nextProps.title &&
+    JSON.stringify(prevProps.data) === JSON.stringify(nextProps.data)
+  );
+});
+
+ScatterChart.displayName = 'ScatterChart';
 
 export default ScatterChart;

@@ -1,5 +1,7 @@
 'use client';
 
+import { memo } from 'react';
+
 interface MetricCardProps {
   title: string;
   value: string | number;
@@ -9,7 +11,7 @@ interface MetricCardProps {
   color?: string;
 }
 
-const MetricCard: React.FC<MetricCardProps> = ({
+const MetricCard: React.FC<MetricCardProps> = memo(({
   title,
   value,
   subtitle,
@@ -46,6 +48,8 @@ const MetricCard: React.FC<MetricCardProps> = ({
       )}
     </div>
   );
-};
+});
+
+MetricCard.displayName = 'MetricCard';
 
 export default MetricCard;

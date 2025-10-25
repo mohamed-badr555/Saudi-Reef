@@ -1,5 +1,7 @@
 'use client';
 
+import { memo } from 'react';
+
 interface StackedMetricCardProps {
   title: string;
   metrics: {
@@ -9,9 +11,7 @@ interface StackedMetricCardProps {
   }[];
 }
 
-const StackedMetricCard: React.FC<StackedMetricCardProps> = ({ title, metrics }) => {
-  const total = metrics.reduce((sum, metric) => sum + metric.value, 0);
-
+const StackedMetricCard: React.FC<StackedMetricCardProps> = memo(({ title, metrics }) => {
   return (
     <div className="bg-linear-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-gray-700/50 shadow-xl hover:shadow-2xl transition-all duration-300">
       <h3 className="text-base sm:text-lg font-semibold text-white mb-4 text-right">{title}</h3>
@@ -53,6 +53,8 @@ const StackedMetricCard: React.FC<StackedMetricCardProps> = ({ title, metrics })
       </div>
     </div>
   );
-};
+});
+
+StackedMetricCard.displayName = 'StackedMetricCard';
 
 export default StackedMetricCard;

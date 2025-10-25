@@ -1,7 +1,7 @@
 'use client';
 
+import { memo, useState, useEffect, useCallback } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { useState, useEffect } from 'react';
 
 interface HorizontalBarChartProps {
   data: Record<string, string | number>[];
@@ -11,7 +11,7 @@ interface HorizontalBarChartProps {
   nameKey?: string;
 }
 
-const CustomTooltip = ({ active, payload, nameKey }: { active?: boolean; payload?: { name: string; value: number; color: string; payload: Record<string, string | number> }[]; nameKey: string }) => {
+const CustomTooltip = memo(({ active, payload, nameKey }: { active?: boolean; payload?: { name: string; value: number; color: string; payload: Record<string, string | number> }[]; nameKey: string }) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-gray-900 border border-gray-700 rounded-lg p-3 shadow-xl">
@@ -25,27 +25,33 @@ const CustomTooltip = ({ active, payload, nameKey }: { active?: boolean; payload
     );
   }
   return null;
-};
+});
 
-const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
+CustomTooltip.displayName = 'CustomTooltip';
+
+const HorizontalBarChart: React.FC<HorizontalBarChartProps> = memo(({
   data,
   title,
   dataKeys,
   colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'],
   nameKey = 'region',
 }) => {
-  const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [isSmallScreen, setIsSmallScreen] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 430;
+    }
+    return false;
+  });
+
+  const checkScreenSize = useCallback(() => {
+    setIsSmallScreen(window.innerWidth < 430);
+  }, []);
 
   useEffect(() => {
-    const checkScreenSize = () => {
-      setIsSmallScreen(window.innerWidth < 430);
-    };
-    
-    checkScreenSize();
     window.addEventListener('resize', checkScreenSize);
     
     return () => window.removeEventListener('resize', checkScreenSize);
-  }, []);
+  }, [checkScreenSize]);
 
   return (
     <div className="bg-linear-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-gray-700/50 shadow-xl hover:shadow-2xl transition-all duration-300">
@@ -95,7 +101,7 @@ const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
             wrapperStyle={{ 
               fontSize: '12px', 
               fontFamily: 'Noto Kufi Arabic', 
-              marginTop: isSmallScreen ? '-50px' : '-15px' 
+              marginTop: isSmallScreen ? '-100px' : '-15px' 
             }}
             iconType="square"
             iconSize={0}
@@ -107,12 +113,24 @@ const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
               stackId="a"
               fill={colors[index % colors.length]}
               radius={[4, 4, 4, 4]}
+              isAnimationActive={false}
             />
           ))}
         </BarChart>
       </ResponsiveContainer>
     </div>
   );
-};
+}, (prevProps, nextProps) => {
+  // Custom comparison to prevent unnecessary re-renders
+  return (
+    prevProps.title === nextProps.title &&
+    prevProps.nameKey === nextProps.nameKey &&
+    JSON.stringify(prevProps.data) === JSON.stringify(nextProps.data) &&
+    JSON.stringify(prevProps.dataKeys) === JSON.stringify(nextProps.dataKeys) &&
+    JSON.stringify(prevProps.colors) === JSON.stringify(nextProps.colors)
+  );
+});
+
+HorizontalBarChart.displayName = 'HorizontalBarChart';
 
 export default HorizontalBarChart;

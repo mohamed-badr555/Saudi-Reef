@@ -1,5 +1,7 @@
 'use client';
 
+import { memo } from 'react';
+
 interface Column {
   key: string;
   label: string;
@@ -13,7 +15,7 @@ interface DataTableProps {
   maxHeight?: string;
 }
 
-const DataTable: React.FC<DataTableProps> = ({
+const DataTable: React.FC<DataTableProps> = memo(({
   title,
   columns,
   data,
@@ -51,6 +53,8 @@ const DataTable: React.FC<DataTableProps> = ({
       </div>
     </div>
   );
-};
+});
+
+DataTable.displayName = 'DataTable';
 
 export default DataTable;

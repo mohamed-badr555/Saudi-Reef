@@ -1,10 +1,12 @@
 'use client';
 
+import { memo } from 'react';
 import Sidebar from '../Sidebar/Sidebar';
 import TopBar from '../TopBar/TopBar';
 import { useAppContext } from '@/Context/AppContext';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
+import MotionWrapper from '../MotionWrapper';
 
 interface PageWrapperProps {
   children: React.ReactNode;
@@ -13,7 +15,7 @@ interface PageWrapperProps {
   currentSection?: string;
 }
 
-const PageWrapper: React.FC<PageWrapperProps> = ({
+const PageWrapper: React.FC<PageWrapperProps> = memo(({
   children,
   showStaticBar = true,
   currentPage,
@@ -96,15 +98,13 @@ const PageWrapper: React.FC<PageWrapperProps> = ({
         />
       )}
 
-      <div
-        className={`transition-all duration-300 overflow-x-hidden ${
-          isMobile ? 'pt-16' : isSidebarOpen ? 'mr-64 pt-16' : 'mr-20 pt-16'
-        }`}
-      >
+      <MotionWrapper>
         {children}
-      </div>
+      </MotionWrapper>
     </main>
   );
-};
+});
+
+PageWrapper.displayName = 'PageWrapper';
 
 export default PageWrapper;

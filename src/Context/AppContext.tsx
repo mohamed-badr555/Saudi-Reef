@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useMemo, useCallback } from 'react';
 
 interface AppContextType {
   isMobile: boolean;
@@ -45,16 +45,16 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  const toggleSidebar = useCallback(() => {
+    setIsSidebarOpen(prev => !prev);
+  }, []);
 
-  const value: AppContextType = {
+  const value: AppContextType = useMemo(() => ({
     isMobile,
     isSidebarOpen,
     setIsSidebarOpen,
     toggleSidebar,
-  };
+  }), [isMobile, isSidebarOpen, toggleSidebar]);
 
   return (
     <AppContext.Provider value={value}>
