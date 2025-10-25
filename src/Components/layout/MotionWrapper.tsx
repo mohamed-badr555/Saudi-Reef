@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAppContext } from '@/Context/AppContext';
 import { memo } from 'react';
 
@@ -11,21 +11,30 @@ interface MotionWrapperProps {
 const MotionWrapper: React.FC<MotionWrapperProps> = memo(({ children }) => {
   const { isMobile, isSidebarOpen } = useAppContext();
 
-  const variants = {
-    open: { marginRight: isMobile ? 0 : '16rem' }, // 256px = w-64
-    closed: { marginRight: isMobile ? 0 : '5rem' }, // 80px = w-20
-  };
-
   return (
-    <motion.div
-      initial={false}
-      animate={isSidebarOpen ? 'open' : 'closed'}
-      variants={variants}
-      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      className="relative flex-1 flex flex-col pt-20"
-    >
-      {children}
-    </motion.div>
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.div
+        layout
+        initial={false}
+        animate={{
+          marginRight: isMobile ? 0 : isSidebarOpen ? '16rem' : '5rem',
+        }}
+        transition={{
+          type: 'spring',
+          stiffness: 300,
+          damping: 30,
+          mass: 0.8,
+        }}
+        className="relative flex-1 flex flex-col pt-20"
+        style={{
+          willChange: 'margin',
+          backfaceVisibility: 'hidden',
+          transform: 'translateZ(0)',
+        }}
+      >
+        {children}
+      </motion.div>
+    </AnimatePresence>
   );
 });
 

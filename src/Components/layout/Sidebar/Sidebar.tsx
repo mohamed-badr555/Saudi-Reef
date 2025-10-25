@@ -37,7 +37,7 @@ interface MenuItem {
 }
 
 const Sidebar: React.FC<SidebarProps> = memo(({ currentPage = 'Dashboard' }) => {
-  const { isMobile, isSidebarOpen: isOpen, toggleSidebar: onToggle } = useAppContext();
+  const { isMobile, isSidebarOpen: isOpen, toggleSidebar: onToggle, setIsSidebarOpen } = useAppContext();
   const pathname = usePathname();
 
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
@@ -114,6 +114,15 @@ const Sidebar: React.FC<SidebarProps> = memo(({ currentPage = 'Dashboard' }) => 
       }
       return [key];
     });
+  };
+
+  const handleLinkClick = () => {
+    if (isMobile) {
+      // Add a small delay to show the click feedback before closing
+      setTimeout(() => {
+        setIsSidebarOpen(false);
+      }, 150);
+    }
   };
 
   const handleMouseEnter = (e: React.MouseEvent, itemKey: string) => {
@@ -238,7 +247,7 @@ const Sidebar: React.FC<SidebarProps> = memo(({ currentPage = 'Dashboard' }) => 
             <div key={index} >
               {item.link ? (
                 // Direct link item
-                <Link href={item.link} >
+                <Link href={item.link} onClick={handleLinkClick}>
                   <div
                     className={`group relative flex items-center px-3 py-2 text-white cursor-pointer transition-all duration-200 rounded-lg ${
                       isActive
@@ -310,7 +319,7 @@ const Sidebar: React.FC<SidebarProps> = memo(({ currentPage = 'Dashboard' }) => 
                                 animate={{ x: 0, opacity: 1 }}
                                 transition={{ delay: subIndex * 0.05, duration: 0.2 }}
                               >
-                                <Link href={subItem.link}>
+                                <Link href={subItem.link} onClick={handleLinkClick}>
                                   <div
                                     className={`flex items-center py-2 px-6 pr-12 text-gray-300 text-sm transition-all duration-200 rounded-xl hover:bg-gray-800 hover:text-white focus:bg-gray-800 focus:text-white my-2 ${
                                       isSubActive
@@ -355,6 +364,7 @@ const Sidebar: React.FC<SidebarProps> = memo(({ currentPage = 'Dashboard' }) => 
                     key={subIndex}
                     href={subItem.link}
                     className="py-1 hover:text-green-300 transition-colors duration-150"
+                    onClick={handleLinkClick}
                   >
                     {subItem.label}
                   </Link>
@@ -364,6 +374,7 @@ const Sidebar: React.FC<SidebarProps> = memo(({ currentPage = 'Dashboard' }) => 
             <Link
               href={menuItems.find((item) => item.key === hoveredItem)?.link || '#'}
               className="hover:text-green-300 transition-colors duration-150"
+              onClick={handleLinkClick}
             >
               {menuItems.find((item) => item.key === hoveredItem)?.label}
             </Link>
