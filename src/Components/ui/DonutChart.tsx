@@ -4,7 +4,17 @@ import { memo, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { ApexOptions } from 'apexcharts';
 
-const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
+const Chart = dynamic(() => import('react-apexcharts'), { 
+  ssr: false,
+  loading: () => (
+    <div className="flex items-center justify-center h-full min-h-[300px]">
+      <div className="animate-pulse">
+        <div className="h-4 bg-gray-700 rounded w-32 mb-4 mx-auto"></div>
+        <div className="h-64 w-64 bg-gray-700 rounded-full"></div>
+      </div>
+    </div>
+  )
+});
 
 interface DonutChartProps {
   data: { name: string; value: number; percentage?: number }[];
